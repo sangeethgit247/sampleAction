@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Devops123
+      POSTGRES_DB: calculator_db
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_ui
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+    - pgadmin_data:/var/lib/pgadmin
+
+  backend:
+    image: hteegnas/backend-calculator:latest
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/calculator_db
+        # We override the properties here
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Devops123
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - db
+
+  frontend:
+    image: hteegnas/frontend-calculator:latest
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:9090
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  pgadmin_data:
