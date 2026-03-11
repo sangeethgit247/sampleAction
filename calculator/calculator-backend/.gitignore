@@ -13,4 +13,4 @@
 *.class
 
 # Ignore XML files (or be specific, e.g., .idea/*.xml)
-*.xml
+#*.xml
